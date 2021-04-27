@@ -1,0 +1,11 @@
+<div class="row row-cols-auto">
+  <div *ngFor="let note of notes" (click)="onSelect(note)" class="card col-lg-2 col-md-3 m-lg-2" data-bs-toggle="modal" data-bs-target="#noteModal">
+    <div class="card-body">
+      <h5 class="card-title">{{note.title}}
+      </h5>
+      <p class="card-text">{{(note.text.length>60)? (note.text | slice:0:60)+'..':(note.text)}}</p>
+    </div>
+  </div>
+</div>
+
+<app-note-detail [note]="selectedNote"></app-note-detail>

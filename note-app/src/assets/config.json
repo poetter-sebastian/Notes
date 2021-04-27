@@ -1,0 +1,8 @@
+{
+  "host": "localhost:8765/api/",
+  "registerURL": "register",
+  "createNoteURL": "createNote",
+  "notesURL": "getNotes",
+  "editNoteURL": "editNote",
+  "deleteNoteURL": "deleteNote"
+}

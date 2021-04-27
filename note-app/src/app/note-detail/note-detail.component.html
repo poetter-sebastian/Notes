@@ -1,0 +1,27 @@
+<div class="modal" id="noteModal" tabindex="-1" aria-labelledby="noteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div *ngIf="note" class="modal-content">
+      <div class="modal-header">
+        <div class="mb-3">
+          <h5 class="modal-title d-inline-flex" id="noteLabel">Title:&nbsp;&nbsp;
+            <input type="text" class="form-control" id="noteTitle" placeholder="Note title" value="{{note.title | uppercase}}">
+          </h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="noteText" class="form-label">Note text</label>
+          <textarea class="form-control" id="noteText" rows="7">{{note.text}}</textarea>
+        </div>
+      </div>
+      <div class="modal-footer pt-0">
+        <div class="w-100 row fs-es">
+          <span class="col-6 text-left">created: {{note.created | date}}</span>
+          <span class="col-6 text-end">last edited: {{note.lastEdited | date}}</span>
+        </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
