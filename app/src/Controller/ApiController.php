@@ -49,7 +49,7 @@ class ApiController extends AppController
     public function index(): void
     {
         $this->RequestHandler->prefers('json');
-        $this->set('errors', []);
+        $this->set('errors', false);
         $this->viewBuilder()
             ->setOption('serialize', ['errors'])
             ->setOption('jsonOptions', JSON_FORCE_OBJECT);
@@ -63,6 +63,8 @@ class ApiController extends AppController
         $this->RequestHandler->prefers('json');
         $this->request->allowMethod(['post', 'put']);
 
+        $this->set('error', false);
+
         $user = $this->Users->newEmptyEntity();
 
         $username = $this->getRequest()->getData('user', '');
@@ -71,13 +73,36 @@ class ApiController extends AppController
         if($username != '' && $auth != '')
         {
             $user->username = $user;
-            $user->salt = UsersTable::salt();
+            $user->salt = UsersTable::getNewSalt();
             $user->password = $user->evaluate($auth);
             $user->created = FrozenTime::now();
+
+            if($this->Users->save($user))
+            {
+                $this->set('data', 'success');
+                $this->viewBuilder()
+                    ->setOption('serialize', ['error', 'data'])
+                    ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+                return;
+            }
+            else
+            {
+                $this->set('error', true);
+                //TODO remove debug log
+                $this->set('errorMessage', $user->getErrors());
+                $this->viewBuilder()
+                    ->setOption('serialize', ['error', 'errorMessage'])
+                    ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+            }
         }
+        else
+        {
+            $this->set('error', true);
+            $this->set('errorMessage', 'empty username or password');
 
-        if ($user->getErrors()) {
-
+            $this->viewBuilder()
+                ->setOption('serialize', ['error', 'errorMessage'])
+                ->setOption('jsonOptions', JSON_FORCE_OBJECT);
         }
     }
 
@@ -90,20 +115,43 @@ class ApiController extends AppController
         $this->RequestHandler->prefers('json');
         $this->request->allowMethod(['post', 'put']);
 
-        if($this->LoginComponent->login($this))
+        $this->set('error', false);
+
+        /* @var \App\Model\Entity\User $user */
+        $user = $this->LoginComponent->login($this);
+        if(!is_null($user))
         {
+            $note = $this->Notes->newEmptyEntity();
 
+            $note->user_id = $user->id;
+            $note->title = $this->request->getData('noteTitle', '');
+            $note->encryptNote($this->request->getData('noteText', ''));
+            $note->created = FrozenTime::now();
+            $note->last_edited = $note->created;
 
-            $this->viewBuilder()
-                ->setOption('serialize', ['data'])
-                ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+            if($this->Notes->save($note))
+            {
+                $this->set('error', false);
+                $this->set('data', 'success');
+                $this->viewBuilder()
+                    ->setOption('serialize', ['error', 'data'])
+                    ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+                return;
+            }
+            $this->set('error', true);
+            //TODO remove debug log
+            $this->set('errorMessage', $note->getErrors());
+
         }
         else
         {
-            $this->viewBuilder()
-                ->setOption('serialize', ['error', 'errorMessage'])
-                ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+            $this->set('error', true);
+            $this->set('errorMessage', 'not logged in');
+
         }
+        $this->viewBuilder()
+            ->setOption('serialize', ['error', 'errorMessage'])
+            ->setOption('jsonOptions', JSON_FORCE_OBJECT);
     }
 
     /**
@@ -115,16 +163,31 @@ class ApiController extends AppController
         $this->RequestHandler->prefers('json');
         $this->request->allowMethod(['post', 'put']);
 
-        if($this->LoginComponent->login($this))
+        $this->set('error', false);
+
+        /* @var \App\Model\Entity\User $user */
+        $user = $this->LoginComponent->login($this);
+        if(!is_null($user))
         {
+            $notes = $this->Notes->find()
+                ->contain(['Users'])
+                ->where(['User.id' => $user->id])
+                ->orderDesc('Notes.last_edit');
 
-
+            /* @var \App\Model\Entity\Note $message */
+            foreach ($notes as $message)
+            {
+                $message->message = $message->decryptNote();
+            }
             $this->viewBuilder()
-                ->setOption('serialize', ['data'])
+                ->setOption('serialize', ['error', 'data' => $notes->toArray()])
                 ->setOption('jsonOptions', JSON_FORCE_OBJECT);
         }
         else
         {
+            $this->set('error', true);
+            $this->set('errorMessage', 'not logged in');
+
             $this->viewBuilder()
                 ->setOption('serialize', ['error', 'errorMessage'])
                 ->setOption('jsonOptions', JSON_FORCE_OBJECT);
@@ -142,16 +205,36 @@ class ApiController extends AppController
         $this->RequestHandler->prefers('json');
         $this->request->allowMethod(['post', 'put']);
 
-        if($this->LoginComponent->login($this))
+        $this->set('error', false);
+
+        /* @var \App\Model\Entity\User $user */
+        $user = $this->LoginComponent->login($this);
+        if(!is_null($user) && is_integer($id) && $id > 0)
         {
+            $note = $this->Notes->get($id);
 
+            $note->title = $this->request->getData('noteTitle', '');
+            $note->encryptNote($this->request->getData('noteText', ''));
+            $note->last_edited = FrozenTime::now();
 
-            $this->viewBuilder()
-                ->setOption('serialize', ['data'])
-                ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+            if($this->Notes->save($note))
+            {
+                $this->set('error', false);
+                $this->set('data', 'success');
+                $this->viewBuilder()
+                    ->setOption('serialize', ['error', 'data'])
+                    ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+                return;
+            }
+            $this->set('error', true);
+            //TODO remove debug log
+            $this->set('errorMessage', $note->getErrors());
         }
         else
         {
+            $this->set('error', true);
+            $this->set('errorMessage', 'not logged in');
+
             $this->viewBuilder()
                 ->setOption('serialize', ['error', 'errorMessage'])
                 ->setOption('jsonOptions', JSON_FORCE_OBJECT);
@@ -169,16 +252,30 @@ class ApiController extends AppController
         $this->RequestHandler->prefers('json');
         $this->request->allowMethod(['post', 'put']);
 
-        if($this->LoginComponent->login($this))
+        /* @var \App\Model\Entity\User $user */
+        $user = $this->LoginComponent->login($this);
+        if(!is_null($user))
         {
+            $note = $this->Notes->get($id);
 
-
-            $this->viewBuilder()
-                ->setOption('serialize', ['data'])
-                ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+            if($this->Notes->delete($note))
+            {
+                $this->set('error', false);
+                $this->set('data', 'success');
+                $this->viewBuilder()
+                    ->setOption('serialize', ['error', 'data'])
+                    ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+                return;
+            }
+            $this->set('error', true);
+            //TODO remove debug log
+            $this->set('errorMessage', $note->getErrors());
         }
         else
         {
+            $this->set('error', true);
+            $this->set('errorMessage', 'not logged in');
+
             $this->viewBuilder()
                 ->setOption('serialize', ['error', 'errorMessage'])
                 ->setOption('jsonOptions', JSON_FORCE_OBJECT);

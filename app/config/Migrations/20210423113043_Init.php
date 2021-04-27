@@ -35,6 +35,10 @@ class Init extends AbstractMigration
                 'limit' => 60,
                 'null' => false,
             ])
+            ->addColumn('salt', 'string', [
+                'default' => null,
+                'null' => false,
+            ])
             ->addColumn('message', 'text', [
                 'default' => null,
                 'limit' => null,

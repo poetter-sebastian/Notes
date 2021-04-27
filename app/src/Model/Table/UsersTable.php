@@ -111,7 +111,7 @@ class UsersTable extends Table
     /**
      * @return string
      */
-    public static function salt() : string
+    public static function getNewSalt() : string
     {
         $newTimestamp = "";
         $timestamp = date('Y-m-d-H-i-s');

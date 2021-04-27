@@ -74,6 +74,11 @@ class NotesTable extends Table
             ->notEmptyString('title');
 
         $validator
+            ->scalar('salt')
+            ->requirePresence('salt', 'salt')
+            ->notEmptyString('salt');
+
+        $validator
             ->scalar('message')
             ->allowEmptyString('message');
 
