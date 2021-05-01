@@ -14,6 +14,8 @@
   </form>
 </div>
 
+<div class="canvas-hide" style="z-index: 1031" (click)="hideCanvas()" *ngIf="open"></div>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-pink" [class.mt-nav]="open" (keydown)="keyDown($event)">
   <div class="container-fluid">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse-menu"
@@ -24,8 +26,8 @@
       <a class="navbar-brand" href="#">{{title}}</a>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
       <div class="d-flex">
-        <button class="btn btn-pink me-1" type="button" title="register" (click)="onSelect(false)">sign up</button>
-        <button class="btn btn-pink" type="button" title="Login" (click)="onSelect(true)">
+        <button class="btn btn-pink me-1" type="button" title="register">sign up</button>
+        <button class="btn btn-pink" type="button" title="Login" (click)="showCanvas(true)">
             <fa-icon [icon]="faSign"></fa-icon>
         </button>
       </div>

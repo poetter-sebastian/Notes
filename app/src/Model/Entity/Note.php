@@ -40,6 +40,8 @@ class Note extends Entity
         'user' => true,
     ];
 
+    protected $_hidden = ['salt', 'user_id'];
+
     /**
      *
      * @return string

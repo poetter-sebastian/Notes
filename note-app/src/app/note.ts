@@ -1,7 +1,7 @@
 export interface Note {
   id: number
   title: string
-  text: string
+  message: string
   created: number
   lastEdited: number
 }

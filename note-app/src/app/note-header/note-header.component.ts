@@ -1,12 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core'
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
-import {$e} from 'codelyzer/angular/styles/chars';
 
 @Component({
   selector: 'app-note-header',
   templateUrl: './note-header.component.html',
   styleUrls: ['./note-header.component.sass']
 })
+
 export class NoteHeaderComponent implements OnInit {
   @Input()title?: string
 
@@ -19,9 +19,13 @@ export class NoteHeaderComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onSelect(b: boolean): void {
+  showCanvas(b: boolean): void {
     this.login = b
     this.open = !this.open
+  }
+
+  hideCanvas(): void{
+    this.open = false
   }
 
   keyDown(e: KeyboardEvent): void {

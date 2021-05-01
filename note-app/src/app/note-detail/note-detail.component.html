@@ -12,7 +12,7 @@
       <div class="modal-body">
         <div class="mb-3">
           <label for="noteText" class="form-label">Note text</label>
-          <textarea class="form-control" id="noteText" rows="7">{{note.text}}</textarea>
+          <textarea class="form-control" id="noteText" rows="7">{{note.message}}</textarea>
         </div>
       </div>
       <div class="modal-footer pt-0">
@@ -20,6 +20,7 @@
           <span class="col-6 text-left">created: {{note.created | date}}</span>
           <span class="col-6 text-end">last edited: {{note.lastEdited | date}}</span>
         </div>
+        <button type="submit" class="btn btn-pink" data-bs-dismiss="modal">Save note</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>

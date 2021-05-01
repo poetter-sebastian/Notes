@@ -116,7 +116,7 @@ class UsersTable extends Table
         $newTimestamp = "";
         $timestamp = date('Y-m-d-H-i-s');
         $replacedTimestamp = str_replace("-", "", $timestamp);
-        for ($i = 0; $i <= 32; $i++)
+        for ($i = 0; $i <= 9; $i++)
         {
             $newTimestamp .= $replacedTimestamp[$i] + rand(0, 9);
         }

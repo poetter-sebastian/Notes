@@ -44,15 +44,28 @@ class ApiController extends AppController
         $this->loadModel('Users');
         $this->loadModel('Notes');
         $this->loadComponent('Login');
+
+        //for the same origin request
+        header('Access-Control-Allow-Origin: *');
     }
 
     public function index(): void
     {
         $this->RequestHandler->prefers('json');
-        $this->set('errors', false);
+        $notes = $this->Notes->find()
+            ->orderDesc('Notes.last_edited');
+
+        /* @var \App\Model\Entity\Note $message */
+        foreach ($notes as $message)
+        {
+            $message->message = $message->decryptNote();
+        }
+
+        $this->set('data', $notes->toArray());
+
         $this->viewBuilder()
-            ->setOption('serialize', ['errors'])
-            ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+            ->setOption('serialize', 'data');
+
     }
 
     /**
@@ -72,7 +85,7 @@ class ApiController extends AppController
 
         if($username != '' && $auth != '')
         {
-            $user->username = $user;
+            $user->username = $username;
             $user->salt = UsersTable::getNewSalt();
             $user->password = $user->evaluate($auth);
             $user->created = FrozenTime::now();
@@ -173,14 +186,18 @@ class ApiController extends AppController
                 ->contain(['Users'])
                 ->where(['User.id' => $user->id])
                 ->orderDesc('Notes.last_edit');
-
             /* @var \App\Model\Entity\Note $message */
             foreach ($notes as $message)
             {
                 $message->message = $message->decryptNote();
             }
+            if($notes->count() == 0)
+            {
+                $notes = [];
+            }
+            $this->set('data', $notes->toArray());
             $this->viewBuilder()
-                ->setOption('serialize', ['error', 'data' => $notes->toArray()])
+                ->setOption('serialize', ['error', 'data'])
                 ->setOption('jsonOptions', JSON_FORCE_OBJECT);
         }
         else

@@ -11,7 +11,8 @@ import { NotesComponent } from './notes/notes.component'
 import { NoteDetailComponent } from './note-detail/note-detail.component'
 import { NoteAddComponent } from './note-add/note-add.component'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NoteHeaderComponent } from './note-header/note-header.component'
+import { NoteHeaderComponent } from './note-header/note-header.component';
+import { MessagesComponent } from './messages/messages.component'
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { NoteHeaderComponent } from './note-header/note-header.component'
     NotesComponent,
     NoteDetailComponent,
     NoteAddComponent,
-    NoteHeaderComponent
+    NoteHeaderComponent,
+    MessagesComponent
   ],
   imports: [
     BrowserModule,

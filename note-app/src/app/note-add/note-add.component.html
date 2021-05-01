@@ -3,3 +3,30 @@
     <fa-icon [icon]="faAdd" size="3x"></fa-icon>
   </button>
 </div>
+
+<div class="modal" id="newNoteModal" tabindex="-1" aria-labelledby="noteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="mb-3">
+          <h5 class="modal-title d-inline-flex mb-0" id="noteLabel">Create new note</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="newNoteTitle" class="form-label">Note title</label>
+          <input type="text" class="form-control" id="newNoteTitle" placeholder="Note title" value="">
+        </div>
+        <div class="mb-3">
+          <label for="newNoteText" class="form-label">Note text</label>
+          <textarea class="form-control" id="newNoteText" rows="7"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer pt-0">
+        <button type="submit" class="btn btn-pink" data-bs-dismiss="modal">Save note</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
