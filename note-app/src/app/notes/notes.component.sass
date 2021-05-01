@@ -1,1 +1,14 @@
+@import "~bootstrap/scss/functions"
+@import "~bootstrap/scss/variables"
+@import "~bootstrap/scss/mixins"
 
+.card
+  cursor: pointer !important
+  transition: all 0.5s
+  &:hover
+    background-color: $cyan-500
+    color: $dark
+    h5
+      transition: all 0.25s
+      color: $dark
+      text-shadow: 1px 1px 3px $cyan-700

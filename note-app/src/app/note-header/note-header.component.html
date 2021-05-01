@@ -1,0 +1,34 @@
+<div id="off-canvas" class="sidenav" *ngIf="open">
+  <form class="row g-3">
+    <div class="col-auto">
+      <label for="username" class="visually-hidden">Username</label>
+      <input type="text" class="form-control" id="username" placeholder="username">
+    </div>
+    <div class="col-auto">
+      <label for="password" class="visually-hidden">Password</label>
+      <input type="password" class="form-control" id="password" placeholder="Password">
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-pink w-100">login</button>
+    </div>
+  </form>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-pink" [class.mt-nav]="open" (keydown)="keyDown($event)">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse-menu"
+            aria-controls="navbar-collapse-menu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar-collapse-menu">
+      <a class="navbar-brand" href="#">{{title}}</a>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+      <div class="d-flex">
+        <button class="btn btn-pink me-1" type="button" title="register" (click)="onSelect(false)">sign up</button>
+        <button class="btn btn-pink" type="button" title="Login" (click)="onSelect(true)">
+            <fa-icon [icon]="faSign"></fa-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

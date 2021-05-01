@@ -3,9 +3,11 @@
     <div class="card-body">
       <h5 class="card-title">{{note.title}}
       </h5>
-      <p class="card-text">{{(note.text.length>60)? (note.text | slice:0:60)+'..':(note.text)}}</p>
+      <p class="card-text">{{(note.text.length>60)? (note.text | slice:0:60)+'...':(note.text)}}</p>
     </div>
   </div>
 </div>
 
 <app-note-detail [note]="selectedNote"></app-note-detail>
+
+<app-note-add></app-note-add>

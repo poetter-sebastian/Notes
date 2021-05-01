@@ -9,12 +9,17 @@ import { ServiceWorkerModule } from '@angular/service-worker'
 import { environment } from '../environments/environment'
 import { NotesComponent } from './notes/notes.component'
 import { NoteDetailComponent } from './note-detail/note-detail.component'
+import { NoteAddComponent } from './note-add/note-add.component'
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NoteHeaderComponent } from './note-header/note-header.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     NotesComponent,
-    NoteDetailComponent
+    NoteDetailComponent,
+    NoteAddComponent,
+    NoteHeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +31,8 @@ import { NoteDetailComponent } from './note-detail/note-detail.component'
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
     }),
-    FormsModule
+    FormsModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

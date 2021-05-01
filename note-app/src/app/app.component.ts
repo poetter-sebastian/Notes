@@ -7,5 +7,5 @@ import 'bootstrap/dist/js/bootstrap.bundle.min'
   styleUrls: ['./app.component.sass']
 })
 export class AppComponent {
-  title = 'My Notes'
+  title = '(My™®©℠ Notes™®©℠)™®©℠'
 }
