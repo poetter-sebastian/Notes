@@ -27,7 +27,7 @@ use phpDocumentor\Reflection\Types\This;
  *
  * @property \App\Model\Table\UsersTable $Users
  * @property \App\Model\Table\NotesTable $Notes
- * @property \App\Controller\Component\LoginComponent $LoginComponent
+ * @property \App\Controller\Component\LoginComponent $Login
  */
 class ApiController extends AppController
 {
@@ -40,22 +40,48 @@ class ApiController extends AppController
     public function initialize(): void
     {
         parent::initialize();
+        $this->loadComponent('Security');
         $this->loadComponent('RequestHandler');
-        $this->loadModel('Users');
-        $this->loadModel('Notes');
         $this->loadComponent('Login');
 
+        $this->loadModel('Users');
+        $this->loadModel('Notes');
+
         //for the same origin request
-        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Origin: http://localhost:4200');
+        header('Access-Control-Allow-Credentials: *');
+        header('Access-Control-Allow-Headers: *');
+        header('Access-Control-Allow-Methods: POST, PUT, GET, OPTIONS, DELETE');
+        $this->RequestHandler->prefers('json');
+    }
+
+    public function beforeFilter(EventInterface $event)
+    {
+        parent::beforeFilter($event);
+
+        $this->Security->setConfig('unlockedActions', ['authenticate']);
     }
 
     public function index(): void
     {
-        $this->RequestHandler->prefers('json');
+        $user = $this->Users->get(1);
+
+        $user->password = $user->evaluate('test');
+
+        if($this->Users->save($user))
+        {
+            $this->set('error', false);
+            $this->set('data', 'success');
+            $this->viewBuilder()
+                ->setOption('serialize', ['error', 'data'])
+                ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+            return;
+        }
+        /*
         $notes = $this->Notes->find()
             ->orderDesc('Notes.last_edited');
 
-        /* @var \App\Model\Entity\Note $message */
+        /* @var \App\Model\Entity\Note $message
         foreach ($notes as $message)
         {
             $message->message = $message->decryptNote();
@@ -64,8 +90,29 @@ class ApiController extends AppController
         $this->set('data', $notes->toArray());
 
         $this->viewBuilder()
-            ->setOption('serialize', 'data');
+            ->setOption('serialize', 'data');*/
+    }
 
+    public function authenticate(): void
+    {
+        $this->set('error', false);
+
+        /* @var \App\Model\Entity\User $user */
+        $user = $this->Login->login($this);
+        if(!is_null($user))
+        {
+            $this->set('error', false);
+            $this->set('errorMessage', '');
+        }
+        else
+        {
+            $this->set('error', true);
+            $this->set('errorMessage', 'not logged in');
+
+        }
+        $this->viewBuilder()
+            ->setOption('serialize', ['error', 'errorMessage'])
+            ->setOption('jsonOptions', JSON_FORCE_OBJECT);
     }
 
     /**
@@ -73,9 +120,6 @@ class ApiController extends AppController
      */
     public function register(): void
     {
-        $this->RequestHandler->prefers('json');
-        $this->request->allowMethod(['post', 'put']);
-
         $this->set('error', false);
 
         $user = $this->Users->newEmptyEntity();
@@ -125,13 +169,10 @@ class ApiController extends AppController
      */
     public function createNote(): void
     {
-        $this->RequestHandler->prefers('json');
-        $this->request->allowMethod(['post', 'put']);
-
         $this->set('error', false);
 
         /* @var \App\Model\Entity\User $user */
-        $user = $this->LoginComponent->login($this);
+        $user = $this->Login->login($this);
         if(!is_null($user))
         {
             $note = $this->Notes->newEmptyEntity();
@@ -173,13 +214,10 @@ class ApiController extends AppController
      */
     public function getNotes(): void
     {
-        $this->RequestHandler->prefers('json');
-        $this->request->allowMethod(['post', 'put']);
-
         $this->set('error', false);
 
         /* @var \App\Model\Entity\User $user */
-        $user = $this->LoginComponent->login($this);
+        $user = $this->Login->login($this);
         if(!is_null($user))
         {
             $notes = $this->Notes->find()
@@ -219,13 +257,10 @@ class ApiController extends AppController
      */
     public function editNote(int $id): void
     {
-        $this->RequestHandler->prefers('json');
-        $this->request->allowMethod(['post', 'put']);
-
         $this->set('error', false);
 
         /* @var \App\Model\Entity\User $user */
-        $user = $this->LoginComponent->login($this);
+        $user = $this->Login->login($this);
         if(!is_null($user) && is_integer($id) && $id > 0)
         {
             $note = $this->Notes->get($id);
@@ -266,11 +301,8 @@ class ApiController extends AppController
      */
     public function deleteNote(int $id): void
     {
-        $this->RequestHandler->prefers('json');
-        $this->request->allowMethod(['post', 'put']);
-
         /* @var \App\Model\Entity\User $user */
-        $user = $this->LoginComponent->login($this);
+        $user = $this->Login->login($this);
         if(!is_null($user))
         {
             $note = $this->Notes->get($id);

@@ -24,6 +24,8 @@
     </button>
     <div class="collapse navbar-collapse" id="navbar-collapse-menu">
       <a class="navbar-brand" href="#">{{title}}</a>
+      <span class="badge bg-cyan" *ngIf="authentication.getOfflineState()">currently offline</span>
+      <span class="badge bg-cyan" *ngIf="!authentication.getLoginState()">not logged in</span>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
       <div class="d-flex">
         <button class="btn btn-pink me-1" type="button" title="register">sign up</button>

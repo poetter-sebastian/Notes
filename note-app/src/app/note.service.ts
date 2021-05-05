@@ -1,41 +1,48 @@
 import { Injectable } from '@angular/core'
-import { Note } from './note'
-import { NOTES } from './mock-notes'
 import { MessageService } from './message.service'
+import { AuthService } from './auth.service'
+import { Note } from './note'
+
 import { catchError, map, tap } from 'rxjs/operators'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import {Observable, of} from 'rxjs'
+import { Observable, of } from 'rxjs'
 
 @Injectable({
   providedIn: 'root'
 })
 export class NoteService {
 
-  private config = {
-    host: 'http://localhost:8765/',
-    registerURL: 'register',
-    createNoteURL: 'createNote',
-    notesURL: 'getNotes',
-    editNoteURL: 'editNote',
-    deleteNoteURL: 'deleteNote'
-  }
-
-  constructor(
-    private messageService: MessageService,
-    private http: HttpClient) { }
+  constructor(private messageService: MessageService, private http: HttpClient, private auth: AuthService) { }
 
   getNotes(): Observable<Note[]> {
-
-    this.http.request('GET', this.config.host, {responseType: 'json'}).subscribe(data => { // @ts-ignore
-      console.log(data.data[0])})
-
-    return this.http.get<JSON>(this.config.host)
+    return this.http.get<JSON>(AuthService.auth + AuthService.notes)
       .pipe(
         catchError(this.handleError<Note[]>('getNotes', []))
       )
   }
 
-  /** Log a HeroService message with the MessageService */
+  createNote(): Observable<any> {
+    return this.http.get<JSON>(AuthService.host + AuthService.create)
+      .pipe(
+        catchError(this.handleError<Note[]>('getNotes', []))
+      )
+  }
+
+  editNote(e: number): Observable<any> {
+    return this.http.get<JSON>(AuthService.host + AuthService.edit)
+      .pipe(
+        catchError(this.handleError<Note[]>('getNotes', []))
+      )
+  }
+
+  deleteNote(e: number): Observable<any> {
+    return this.http.get<JSON>(AuthService.host + AuthService.delete)
+      .pipe(
+        catchError(this.handleError<Note[]>('getNotes', []))
+      )
+  }
+
+  /** Log a NotesService message with the MessageService */
   private log(message: string): void {
     this.messageService.add(`NoteService: ${message}`)
   }

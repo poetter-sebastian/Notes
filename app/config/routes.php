@@ -52,6 +52,7 @@ $routes->scope('/', function (RouteBuilder $builder) {
      * to use (in this case, templates/Pages/home.php)...
      */
     $builder->connect('/', ['controller' => 'Api', 'action' => 'index', '_ext' => 'json']);
+    $builder->connect('/api/authenticate/', ['controller' => 'Api', 'action' => 'authenticate', '_ext' => 'json']);
     $builder->connect('/api/register/', ['controller' => 'Api', 'action' => 'register', '_ext' => 'json']);
     $builder->connect('/api/getNotes/', ['controller' => 'Api', 'action' => 'getNotes', '_ext' => 'json']);
     $builder->connect('/api/addNote/', ['controller' => 'Api', 'action' => 'addNote', '_ext' => 'json']);

@@ -3,5 +3,5 @@ export interface Note {
   title: string
   message: string
   created: number
-  lastEdited: number
+  last_edited: number
 }

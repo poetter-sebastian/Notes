@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core'
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
+import {AuthService} from '../auth.service'
 
 @Component({
   selector: 'app-note-header',
@@ -14,7 +15,7 @@ export class NoteHeaderComponent implements OnInit {
   login = true
   faSign = faSignInAlt
 
-  constructor() { }
+  constructor(public authentication: AuthService) { }
 
   ngOnInit(): void {
   }

@@ -36,20 +36,24 @@ class LoginComponent extends Component
 
     public function login(ApiController $api): ?user
     {
-        $username = $api->getRequest()->getData('user', '');
+        $username = $api->getRequest()->getData('username', '');
         $auth = $api->getRequest()->getData('auth', '');
 
         if($username != '' && $auth != '')
         {
-            /* @var $user \App\Model\Entity\User */
             $user = $api->Users->find()
-                ->where(['username' => $username, 'password' => $user->evaluate($auth)])
+                ->where(['username' => $username])
                 ->limit(1);
 
-            if(!empty($user))
+            $user = $api->Users->find()
+                ->where(['username' => $username, 'password' => $user->first()->evaluate($auth)])
+                ->limit(1);
+
+            if(!empty($user->first()))
             {
-                return $user;
+                return $user->first();
             }
+
             $api->set(
                 [
                     'error' => true,
