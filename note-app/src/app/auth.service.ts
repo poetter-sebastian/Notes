@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { catchError, map, tap } from 'rxjs/operators'
+import {catchError, map, retry, tap} from 'rxjs/operators'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable, of } from 'rxjs'
 import { MessageService } from './message.service'
@@ -10,7 +10,6 @@ import { MessageService } from './message.service'
 export class AuthService {
 
   constructor(private messageService: MessageService, private http: HttpClient) {
-    this.testLogin()
   }
 
   public static host = 'http://localhost:8765/'
@@ -21,26 +20,25 @@ export class AuthService {
   public static edit = 'api/editNote'
   public static delete = 'api/deleteNote'
 
-  private isLoggedIn = false
   private offline = false
 
-  public testLogin(): void {
-    this.http.post<Error>(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'})
+  public async getLoginState(): Promise<boolean> {
+    if (!this.offline) {
+      return of(true).toPromise()
+    }
+    else {
+    return await this.http.post<Error>(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'})
       .pipe(
         catchError(this.handleError('testLogin'))
-      ).subscribe(res => {
-        if (!res.error) {
-          this.isLoggedIn = true
-        }
-    })
-  }
-
-  public getLoginState(): boolean {
-    return this.isLoggedIn
-  }
-
-  public setLoginState(loggedIn: boolean): void {
-    this.isLoggedIn = loggedIn
+      ).toPromise().then(res => {
+        this.offline = res.error
+        return !this.offline
+      }).catch(reason => {
+        // TODO: analyze
+        this.offline = true
+        return !this.offline
+      })
+    }
   }
 
   public getOfflineState(): boolean {
@@ -48,6 +46,8 @@ export class AuthService {
   }
 
   public setOfflineState(offline: boolean): void {
+    // BIG TODO: when wechsel von false zu true, dann localstorage nach oben pushen auslösen
+
     this.offline = offline
   }
 
@@ -64,12 +64,12 @@ export class AuthService {
    */
   private handleError<T>(operation = 'operation', result?: T): any{
     return(error: any): Observable<T> => {
-
+      this.offline = true
       // TODO: send the error to remote logging infrastructure
       console.error(error) // log to console instead
 
       // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`)
+      // this.log(`${operation} failed: ${error.message}`)
 
       // Let the app keep running by returning an empty result.
       return of(result as T)

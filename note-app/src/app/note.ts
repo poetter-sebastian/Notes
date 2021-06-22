@@ -1,7 +1,10 @@
-export interface Note {
-  id: number
-  title: string
-  message: string
-  created: number
-  last_edited: number
+export class Note {
+  constructor(
+    public id: number,
+    public title: string,
+    public message: string,
+    public created: number,
+    // tslint:disable-next-line:variable-name
+    public last_edited: number
+  ) {}
 }

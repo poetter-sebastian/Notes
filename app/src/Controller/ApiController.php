@@ -64,24 +64,11 @@ class ApiController extends AppController
 
     public function index(): void
     {
-        $user = $this->Users->get(1);
 
-        $user->password = $user->evaluate('test');
-
-        if($this->Users->save($user))
-        {
-            $this->set('error', false);
-            $this->set('data', 'success');
-            $this->viewBuilder()
-                ->setOption('serialize', ['error', 'data'])
-                ->setOption('jsonOptions', JSON_FORCE_OBJECT);
-            return;
-        }
-        /*
         $notes = $this->Notes->find()
             ->orderDesc('Notes.last_edited');
 
-        /* @var \App\Model\Entity\Note $message
+        /* @var \App\Model\Entity\Note $message */
         foreach ($notes as $message)
         {
             $message->message = $message->decryptNote();
@@ -90,7 +77,7 @@ class ApiController extends AppController
         $this->set('data', $notes->toArray());
 
         $this->viewBuilder()
-            ->setOption('serialize', 'data');*/
+            ->setOption('serialize', 'data');
     }
 
     public function authenticate(): void

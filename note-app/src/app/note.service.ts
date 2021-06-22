@@ -15,30 +15,30 @@ export class NoteService {
   constructor(private messageService: MessageService, private http: HttpClient, private auth: AuthService) { }
 
   getNotes(): Observable<Note[]> {
-    return this.http.get<JSON>(AuthService.auth + AuthService.notes)
+    return this.http.get<JSON>(AuthService.host)
       .pipe(
         catchError(this.handleError<Note[]>('getNotes', []))
       )
   }
 
-  createNote(): Observable<any> {
-    return this.http.get<JSON>(AuthService.host + AuthService.create)
+  createNote(note: Note): Observable<any> {
+    return this.http.post<JSON>(AuthService.host + AuthService.create, note)
       .pipe(
-        catchError(this.handleError<Note[]>('getNotes', []))
+        catchError(this.handleError<Note[]>('createNote', []))
       )
   }
 
-  editNote(e: number): Observable<any> {
-    return this.http.get<JSON>(AuthService.host + AuthService.edit)
+  editNote(note: Note): Observable<any> {
+    return this.http.put<JSON>(AuthService.host + AuthService.edit + '/' + note.id, note)
       .pipe(
-        catchError(this.handleError<Note[]>('getNotes', []))
+        catchError(this.handleError<Note[]>('editNote', []))
       )
   }
 
-  deleteNote(e: number): Observable<any> {
-    return this.http.get<JSON>(AuthService.host + AuthService.delete)
+  deleteNote(note: Note): Observable<any> {
+    return this.http.delete<JSON>(AuthService.host + AuthService.delete + '/' + note.id, )
       .pipe(
-        catchError(this.handleError<Note[]>('getNotes', []))
+        catchError(this.handleError<Note[]>('deleteNote', []))
       )
   }
 
@@ -55,7 +55,7 @@ export class NoteService {
    */
   private handleError<T>(operation = 'operation', result?: T): any{
     return(error: any): Observable<T> => {
-
+      this.auth.setOfflineState(true)
       // TODO: send the error to remote logging infrastructure
       console.error(error) // log to console instead
 
