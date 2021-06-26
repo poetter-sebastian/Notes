@@ -15,7 +15,9 @@ export class LocalStorageService {
     if (tmpItems === null) {
       this.setItem(key, JSON.stringify([value]))
     } else {
-      this.setItem(key, JSON.parse(tmpItems).push(value))
+      const newNotes = JSON.parse(tmpItems) as Note[]
+      newNotes.push(value)
+      this.setItem(key, JSON.stringify(newNotes))
     }
   }
 

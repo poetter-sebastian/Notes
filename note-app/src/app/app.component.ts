@@ -17,6 +17,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     window.addEventListener('online',  this.onNetworkStatusChange.bind(this))
     window.addEventListener('offline', this.onNetworkStatusChange.bind(this))
+    this.auth.getLoginState().then()
   }
 
   onNetworkStatusChange(): void {

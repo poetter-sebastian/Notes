@@ -6,7 +6,7 @@
 
 <div class="modal" id="newNoteModal" tabindex="-1" aria-labelledby="noteLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl">
-    <form (ngSubmit)="onSubmit()" #noteForm="ngForm">
+    <form (ngSubmit)="onSubmit(noteForm)" #noteForm="ngForm">
       <div class="modal-content">
         <div class="modal-header">
           <div class="mb-3">
@@ -26,7 +26,7 @@
         </div>
         <div class="modal-footer pt-0">
           <button type="submit" class="btn btn-pink" [disabled]="!noteForm.form.valid" >Save note</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" #closeButton class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </form>

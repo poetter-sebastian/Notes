@@ -20,7 +20,9 @@ use App\Model\Table\UsersTable;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\I18n\FrozenTime;
+use Cake\Log\Log;
 use phpDocumentor\Reflection\Types\This;
+use SebastianBergmann\Environment\Console;
 
 /**
  * ApiController
@@ -51,7 +53,7 @@ class ApiController extends AppController
         header('Access-Control-Allow-Origin: http://localhost:4200');
         header('Access-Control-Allow-Credentials: *');
         header('Access-Control-Allow-Headers: *');
-        header('Access-Control-Allow-Methods: POST, PUT, GET, OPTIONS, DELETE');
+        header('Access-Control-Allow-Methods: POST, PUT, GET, DELETE');
         $this->RequestHandler->prefers('json');
     }
 
@@ -59,12 +61,11 @@ class ApiController extends AppController
     {
         parent::beforeFilter($event);
 
-        $this->Security->setConfig('unlockedActions', ['authenticate']);
+        $this->Security->setConfig('unlockedActions', ['authenticate', 'createNote']);
     }
 
     public function index(): void
     {
-
         $notes = $this->Notes->find()
             ->orderDesc('Notes.last_edited');
 
@@ -157,7 +158,6 @@ class ApiController extends AppController
     public function createNote(): void
     {
         $this->set('error', false);
-
         /* @var \App\Model\Entity\User $user */
         $user = $this->Login->login($this);
         if(!is_null($user))
@@ -165,6 +165,7 @@ class ApiController extends AppController
             $note = $this->Notes->newEmptyEntity();
 
             $note->user_id = $user->id;
+            $this->log('<warning>Overwrite:</warning> foo.php was overwritten.');
             $note->title = $this->request->getData('noteTitle', '');
             $note->encryptNote($this->request->getData('noteText', ''));
             $note->created = FrozenTime::now();

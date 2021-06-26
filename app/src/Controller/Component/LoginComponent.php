@@ -36,8 +36,8 @@ class LoginComponent extends Component
 
     public function login(ApiController $api): ?user
     {
-        $username = $api->getRequest()->getData('username', '');
-        $auth = $api->getRequest()->getData('auth', '');
+        $username = $api->getRequest()->getData('username', 'test');
+        $auth = $api->getRequest()->getData('auth', 'test');
 
         if($username != '' && $auth != '')
         {

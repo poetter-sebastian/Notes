@@ -4,6 +4,7 @@ import {LocalStorageService} from './local-storage.service'
 import {NoteService} from './note.service'
 import {Note} from './note'
 import {of} from 'rxjs'
+import {NgForm} from '@angular/forms'
 
 @Injectable({
   providedIn: 'root'
@@ -13,33 +14,44 @@ export class RemoteManagingService {
   constructor(
     private authService: AuthService,
     private storageService: LocalStorageService,
-    private noteService: NoteService
+    private noteService: NoteService,
   ) { }
 
   callback: any
 
   public async getNotes(): Promise<Array<Note>> {
     if (await this.authService.getLoginState()) {
+      console.log('remote-managing.service: try to load online notes')
       return this.noteService.getNotes().toPromise().then(notes => {
         this.storageService.setNotes(notes)
         return notes
       })
     } else {
+      console.log('remote-managing.service: try to load offline notes')
       return of(this.storageService.getNotes()).toPromise()
     }
   }
 
-  public async addNote(note: Note): Promise<any> {
+  public async addNote(note: Note, form: NgForm): Promise<any> {
+    note.id = Math.floor(Math.random() * (99999 - 1) + 1)
+    if (note.last_edited === 0) {
+      note.last_edited = Date.now()
+    }
+    if (note.created === 0) {
+      note.created = Date.now()
+    }
     // TODO: subscriber.notify
     this.callback(note)
-    console.log('callback called')
+    console.log('remote-managing.service: callback called')
     if (await this.authService.getLoginState()) {
-      console.log('remote create node')
+      console.log('remote-managing.service: remote create note')
       this.noteService.createNote(note)
     } else {
-      console.log('local add note')
+      console.log('remote-managing.service: local add note')
       this.storageService.addNote(note)
     }
+    form.resetForm()
+    window.location.reload()
   }
 
   public async getNote(id: number): Promise<Note | undefined> {

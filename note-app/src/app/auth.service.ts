@@ -21,23 +21,34 @@ export class AuthService {
   public static delete = 'api/deleteNote'
 
   private offline = false
+  private logged = false
 
   public async getLoginState(): Promise<boolean> {
+    this.offline = true
+    return of(false).toPromise()
+
     if (!this.offline) {
       return of(true).toPromise()
     }
     else {
-    return await this.http.post<Error>(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'})
-      .pipe(
-        catchError(this.handleError('testLogin'))
-      ).toPromise().then(res => {
-        this.offline = res.error
-        return !this.offline
-      }).catch(reason => {
-        // TODO: analyze
-        this.offline = true
-        return !this.offline
-      })
+      return await this.http.post<Error>(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'})
+        .pipe(
+          catchError(this.handleError('auth.service: testLogin'))
+        ).toPromise().then(res => {
+          if (res === undefined) {
+            this.offline = true
+            return !this.offline
+          }
+          else {
+            this.offline = res.error
+            return !this.offline
+          }
+        }).catch(reason => {
+          // TODO: analyze
+          console.log('auth.service: ' + reason)
+          this.offline = true
+          return !this.offline
+        })
     }
   }
 

@@ -14,6 +14,7 @@ export class NoteService {
 
   constructor(private messageService: MessageService, private http: HttpClient, private auth: AuthService) { }
 
+
   getNotes(): Observable<Note[]> {
     return this.http.get<JSON>(AuthService.host)
       .pipe(
@@ -21,11 +22,15 @@ export class NoteService {
       )
   }
 
-  createNote(note: Note): Observable<any> {
-    return this.http.post<JSON>(AuthService.host + AuthService.create, note)
+  createNote(note: Note): any {
+    console.log(note + ' loaded to server')
+    return this.http.post<JSON>(AuthService.host + AuthService.create, {username: 'test', auth: 'test', note: JSON.stringify(note)})
       .pipe(
         catchError(this.handleError<Note[]>('createNote', []))
-      )
+      ).subscribe(o => {
+        console.log(o)
+        return o
+      })
   }
 
   editNote(note: Note): Observable<any> {

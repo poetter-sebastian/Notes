@@ -24,20 +24,7 @@ export class NotesComponent implements OnInit {
   selectedNote?: Note
 
   ngOnInit(): void {
-    this.getOnlineNotes()
-    /*
-    if (this.authentication.getOfflineState() || !this.authentication.getLoginState()) {
-      console.log('note.component: not logged in: try to load from local storage')
-      const offlineNotes = LocalStorageService.getItem(`note`)
-      if (offlineNotes != null) {
-        this.notes = JSON.parse(offlineNotes)
-      } else {
-        console.log('note.component: no stored notes found!')
-      }
-    } else {
-      console.log('note.component: logged in')
-      this.getOnlineNotes()
-    }*/
+    this.getNotes()
   }
 
   onSelect(note: Note): void {
@@ -57,8 +44,8 @@ export class NotesComponent implements OnInit {
     this.notes.push(note)
   }
 
-  getOnlineNotes(): void {
-    console.log('note.component: load online notes')
+  getNotes(): void {
+    console.log('note.component: load notes')
     // TODO subscribe to managing service
     this.managingService.callback = this.updateNote.bind(this)
     this.managingService.getNotes().then(notes => this.notes = notes)
