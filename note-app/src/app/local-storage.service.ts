@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core'
-import {Note} from './note';
-import {not} from 'rxjs/internal-compatibility';
+import {Note} from './note'
+import {not} from 'rxjs/internal-compatibility'
 
 @Injectable({
   providedIn: 'root'
@@ -51,17 +51,29 @@ export class LocalStorageService {
   }
 
   setNote(note: Note): void {
-    for (const storedNode of this.getNotes()) {
+    const notes = this.getNotes()
+    for (const storedNode of notes) {
       if (storedNode.id === note.id) {
         storedNode.title = note.title
         storedNode.message = note.message
         storedNode.last_edited = note.last_edited
       }
     }
+    this.setNotes(notes)
   }
 
   setNotes(notes: Note[]): void {
     this.setItem('notes', JSON.stringify(notes))
     // TODO: resolve merge conflicts
+  }
+
+  deleteNote(id: number): void {
+    const notes = this.getNotes()
+    notes.forEach((element, index) => {
+      if (element.id === id) {
+        notes.splice(index, 1)
+      }
+    })
+    this.setNotes(notes)
   }
 }

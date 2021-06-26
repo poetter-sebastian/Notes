@@ -3,13 +3,15 @@ import {catchError, map, retry, tap} from 'rxjs/operators'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable, of } from 'rxjs'
 import { MessageService } from './message.service'
+import {LocalStorageService} from './local-storage.service'
+import {RemoteManagingService} from './remote-managing.service'
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private messageService: MessageService, private http: HttpClient) {
+  constructor(private messageService: MessageService) {
   }
 
   public static host = 'http://localhost:8765/'
@@ -21,35 +23,12 @@ export class AuthService {
   public static delete = 'api/deleteNote'
 
   private offline = false
-  private logged = false
 
-  public async getLoginState(): Promise<boolean> {
-    this.offline = true
-    return of(false).toPromise()
-
-    if (!this.offline) {
-      return of(true).toPromise()
-    }
-    else {
-      return await this.http.post<Error>(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'})
-        .pipe(
-          catchError(this.handleError('auth.service: testLogin'))
-        ).toPromise().then(res => {
-          if (res === undefined) {
-            this.offline = true
-            return !this.offline
-          }
-          else {
-            this.offline = res.error
-            return !this.offline
-          }
-        }).catch(reason => {
-          // TODO: analyze
-          console.log('auth.service: ' + reason)
-          this.offline = true
-          return !this.offline
-        })
-    }
+  public getLoginState(): boolean {
+      // this.http.post<Error>(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'})
+      //  .toPromise().then(r => console.log('in' + r)).catch(r => console.log('in' + r))
+      this.offline = true
+      return false
   }
 
   public getOfflineState(): boolean {
@@ -57,8 +36,9 @@ export class AuthService {
   }
 
   public setOfflineState(offline: boolean): void {
-    // BIG TODO: when wechsel von false zu true, dann localstorage nach oben pushen auslösen
+    if (this.offline && !offline) {
 
+    }
     this.offline = offline
   }
 

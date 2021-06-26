@@ -5,6 +5,7 @@ import {NoteService} from './note.service'
 import {Note} from './note'
 import {of} from 'rxjs'
 import {NgForm} from '@angular/forms'
+import {not} from 'rxjs/internal-compatibility';
 
 @Injectable({
   providedIn: 'root'
@@ -20,16 +21,20 @@ export class RemoteManagingService {
   callback: any
 
   public async getNotes(): Promise<Array<Note>> {
-    if (await this.authService.getLoginState()) {
+    if (this.authService.getLoginState()) {
       console.log('remote-managing.service: try to load online notes')
       return this.noteService.getNotes().toPromise().then(notes => {
         this.storageService.setNotes(notes)
         return notes
       })
     } else {
-      console.log('remote-managing.service: try to load offline notes')
-      return of(this.storageService.getNotes()).toPromise()
+      return this.getOfflineNotes()
     }
+  }
+
+  public getOfflineNotes(): Array<Note> {
+    console.log('remote-managing.service: try to load offline notes')
+    return this.storageService.getNotes()
   }
 
   public async addNote(note: Note, form: NgForm): Promise<any> {
@@ -43,7 +48,7 @@ export class RemoteManagingService {
     // TODO: subscriber.notify
     this.callback(note)
     console.log('remote-managing.service: callback called')
-    if (await this.authService.getLoginState()) {
+    if (this.authService.getLoginState()) {
       console.log('remote-managing.service: remote create note')
       this.noteService.createNote(note)
     } else {
@@ -51,6 +56,18 @@ export class RemoteManagingService {
       this.storageService.addNote(note)
     }
     form.resetForm()
+    window.location.reload()
+  }
+
+  public async deleteNote(id: number): Promise<any> {
+    console.log('remote-managing.service: delete note')
+    if (this.authService.getLoginState()) {
+      console.log('remote-managing.service: delete remote note')
+      this.noteService.deleteNote(id)
+    } else {
+      console.log('remote-managing.service: delete local note')
+      this.storageService.deleteNote(id)
+    }
     window.location.reload()
   }
 
@@ -65,12 +82,18 @@ export class RemoteManagingService {
     })
   }
 
-  public async setNode(id: number, note: Note): Promise<any> {
-    note.id = id
-    if (await this.authService.getLoginState()) {
+  public async setNode(note: Note): Promise<any> {
+    if (this.authService.getLoginState()) {
       this.noteService.editNote(note)
     } else {
       this.storageService.setNote(note)
     }
+    window.location.reload()
+  }
+
+  public async setNotes(notes: Note[]): Promise<any> {
+    notes.forEach(note => {
+      this.setNode(note)
+    })
   }
 }

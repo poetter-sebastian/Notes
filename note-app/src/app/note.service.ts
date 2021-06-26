@@ -40,8 +40,8 @@ export class NoteService {
       )
   }
 
-  deleteNote(note: Note): Observable<any> {
-    return this.http.delete<JSON>(AuthService.host + AuthService.delete + '/' + note.id, )
+  deleteNote(id: number): Observable<any> {
+    return this.http.delete<JSON>(AuthService.host + AuthService.delete + '/' + id)
       .pipe(
         catchError(this.handleError<Note[]>('deleteNote', []))
       )

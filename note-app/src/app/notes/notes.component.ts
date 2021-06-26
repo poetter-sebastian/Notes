@@ -4,8 +4,8 @@ import {LocalStorageService} from '../local-storage.service'
 import {Note} from '../note'
 import {MessageService} from '../message.service'
 import {AuthService} from '../auth.service'
-import {RemoteManagingService} from '../remote-managing.service';
-import {not} from 'rxjs/internal-compatibility';
+import {RemoteManagingService} from '../remote-managing.service'
+import {not} from 'rxjs/internal-compatibility'
 
 @Component({
   selector: 'app-notes',

@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core'
 import 'bootstrap/dist/js/bootstrap.bundle.min'
 import {AuthService} from './auth.service'
+import {RemoteManagingService} from './remote-managing.service';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,7 @@ import {AuthService} from './auth.service'
 })
 export class AppComponent implements OnInit {
 
-  constructor(private auth: AuthService) {
+  constructor(private auth: AuthService, private manager: RemoteManagingService) {
   }
 
   title = '(My™®©℠ Notes™®©℠)™®©℠'
@@ -17,11 +18,15 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     window.addEventListener('online',  this.onNetworkStatusChange.bind(this))
     window.addEventListener('offline', this.onNetworkStatusChange.bind(this))
-    this.auth.getLoginState().then()
+    this.auth.getLoginState()
   }
 
   onNetworkStatusChange(): void {
+    // if app was offline and getting online and push the new notes to the server
+    if (this.auth.getOfflineState() && !navigator.onLine) {
+      this.manager.setNotes(this.manager.getOfflineNotes()).then()
+    }
     this.auth.setOfflineState(!navigator.onLine)
-    console.log('offline ' + this.auth.getOfflineState())
+
   }
 }

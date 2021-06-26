@@ -2,7 +2,7 @@ import {Component, Inject, OnInit, ViewChild} from '@angular/core'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import {Note} from '../note'
 import { DOCUMENT } from '@angular/common'
-import {FormControl, FormGroup, NgForm, Validators} from '@angular/forms';
+import {FormControl, FormGroup, NgForm, Validators} from '@angular/forms'
 import {LocalStorageService} from '../local-storage.service'
 import {RemoteManagingService} from '../remote-managing.service'
 
