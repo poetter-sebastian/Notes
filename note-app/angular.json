@@ -131,6 +131,5 @@
       }
     }
   },
-  "defaultProject": "note-app",
-
+  "defaultProject": "note-app"
 }
