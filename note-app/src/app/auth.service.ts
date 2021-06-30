@@ -1,11 +1,7 @@
-import { Injectable } from '@angular/core'
-import {catchError, map, retry, tap} from 'rxjs/operators'
-import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable, of } from 'rxjs'
-import { MessageService } from './message.service'
-import {LocalStorageService} from './local-storage.service'
-import {RemoteManagingService} from './remote-managing.service'
-import {Note} from './note'
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable, of} from 'rxjs';
+import {MessageService} from './message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,71 +13,64 @@ export class AuthService {
 
   public static host = 'http://localhost:8765/'
   public static auth = 'api/authenticate'
-  public static register = 'api/register'
-  public static create = 'api/createNote'
-  public static notes = 'api/getNotes'
-  public static edit = 'api/editNote'
-  public static delete = 'api/deleteNote'
+  public static register = 'api/register.json'
+  public static create = 'api/createNote.json'
+  public static notes = 'api/getNotes.json'
+  public static edit = 'api/editNote.json'
+  public static delete = 'api/deleteNote.json'
 
   private offline = false
   private loggedIn = false
-  private firstTry = true
+  /*private firstTry = true*/
 
-  public getLoginState(notes?: () => Promise<Array<Note>>): boolean {
-    if ((!this.loggedIn && !this.firstTry) || this.offline)
-    {
-      console.log('not logged in')
-      this.loggedIn = false
-      return false
-    }
-    if (this.loggedIn)
-    {
+  public getLoginState(): Promise<boolean> {
+    // if ((!this.loggedIn && !this.firstTry) || this.offline)
+    if (this.loggedIn && !this.offline) {
       console.log('logged in')
-      return true
-    }
-    this.http.post(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'})
-      .pipe(
-        catchError(this.handleError('auth.service: testLogin'))
-      ).toPromise().then(res => {
-        if (res === undefined) {
-          console.log('not logged in')
+      return of(true).toPromise()
+    } else {
+      const promise = this.http.post(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'}).toPromise()
+      return promise.then(res => {
+        if (res === undefined) { // || !res.error
+          console.log('log in failed')
           this.offline = true
           this.loggedIn = false
-          this.firstTry = false
-          return this.loggedIn
-        }
-        else {
-          console.log('first logged in')
-          if (!this.loggedIn && notes !== undefined) {
-            notes().then(r => r)
-          }
+        } else {
+          console.log('log in success')
           this.offline = false
           this.loggedIn = true
-          this.firstTry = false
-
-          return this.loggedIn
         }
-      }).catch((reason: string) => {
+        return this.loggedIn
+      }).catch(err => {
+        console.log('log in failed')
+        this.offline = true
+        this.loggedIn = false
+        return this.loggedIn
+      })
+
+      /*.catch((reason: string) => {
         // TODO: analyze
         console.log('auth.service: ' + reason)
         this.offline = true
-        this.firstTry = false
         return !this.offline
-      })
-    this.loggedIn = false
-    return false
+      })*/
+    }
+  }
+
+  public getOnline(): boolean {
+    return this.loggedIn
   }
 
   public getOfflineState(): boolean {
     return this.offline
   }
 
-  public setOfflineState(offline: boolean): void {
+ /* public setOfflineState(offline: boolean): void {
     if (this.offline && !offline) {
 
     }
     this.offline = offline
-  }
+  }*/
 
   /** Log a NotesService message with the MessageService */
   private log(message: string): void {

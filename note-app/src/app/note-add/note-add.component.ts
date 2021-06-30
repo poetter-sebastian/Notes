@@ -25,7 +25,7 @@ export class NoteAddComponent implements OnInit {
   onSubmit(form: NgForm): void {
     this.closeButton.nativeElement.click()
     console.log(this.model)
-    this.managingService.addNote(this.model, form).then(r => r)
+    this.managingService.addNote(this.model, form)
     this.submitted = true
   }
 

@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\UsersTable;
+use Cake\Error\Debugger;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\I18n\FrozenTime;
@@ -164,10 +165,13 @@ class ApiController extends AppController
         {
             $note = $this->Notes->newEmptyEntity();
 
+            $input = json_decode($this->request->getData('note', ''));
+            Log::critical($this->request->getData('note', ''));
+
             $note->user_id = $user->id;
-            $this->log('<warning>Overwrite:</warning> foo.php was overwritten.');
-            $note->title = $this->request->getData('noteTitle', '');
-            $note->encryptNote($this->request->getData('noteText', ''));
+            $note->id = $input->id;
+            $note->title = $input->title;
+            $note->encryptNote($input->message);
             $note->created = FrozenTime::now();
             $note->last_edited = $note->created;
 
@@ -183,7 +187,6 @@ class ApiController extends AppController
             $this->set('error', true);
             //TODO remove debug log
             $this->set('errorMessage', $note->getErrors());
-
         }
         else
         {

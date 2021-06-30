@@ -31,13 +31,13 @@ export class NoteDetailComponent implements OnInit {
       this.text.nativeElement.value,
       this.note.created,
       this.note.last_edited)
-    this.managingService.setNode(editedNote).then(r => r)
+    this.managingService.setNote(editedNote)
   }
 
   deleteNote(): void {
     if (this.note === undefined) {
       return
     }
-    this.managingService.deleteNote(this.note.id).then(r => r)
+    this.managingService.deleteNote(this.note.id)
   }
 }

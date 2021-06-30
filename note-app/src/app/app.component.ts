@@ -24,9 +24,10 @@ export class AppComponent implements OnInit {
   onNetworkStatusChange(): void {
     // if app was offline and getting online and push the new notes to the server
     if (this.auth.getOfflineState() && !navigator.onLine) {
-      this.manager.setNotes(this.manager.getOfflineNotes()).then()
+      this.manager.pushOfflineNotes()
+      // this.manager.setNotes(this.manager.getOfflineNotes()).then()
     }
-    this.auth.setOfflineState(!navigator.onLine)
+    // this.auth.setOfflineState(!navigator.onLine)
 
   }
 }

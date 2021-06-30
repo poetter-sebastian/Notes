@@ -15,36 +15,38 @@ export class NoteService {
   constructor(private messageService: MessageService, private http: HttpClient, private auth: AuthService) { }
 
 
-  getNotes(): Observable<Note[]> {
-    return this.http.get<JSON>(AuthService.host)
-      .pipe(
-        catchError(this.handleError<Note[]>('getNotes', []))
-      )
+  getNotes(): Promise<Note[]> {
+    return this.http.get<Note[]>(AuthService.host).toPromise()
   }
 
-  createNote(note: Note): any {
+  createNote(note: Note): Promise<boolean> {
     console.log(note + ' loaded to server')
     return this.http.post<JSON>(AuthService.host + AuthService.create, {username: 'test', auth: 'test', note: JSON.stringify(note)})
-      .pipe(
+      .toPromise().catch(err => {
+        console.log(err)
+      }).then(res => {
+        return res !== undefined
+      })
+      /*.pipe(
         catchError(this.handleError<Note[]>('createNote', []))
       ).subscribe(o => {
         console.log(o)
         return o
+      })*/
+  }
+
+  editNote(note: Note): Promise<boolean> {
+    return this.http.put<JSON>(AuthService.host + AuthService.edit + '/' + note.id, note)
+      .toPromise().then(res => {
+        return res !== undefined
       })
   }
 
-  editNote(note: Note): Observable<any> {
-    return this.http.put<JSON>(AuthService.host + AuthService.edit + '/' + note.id, note)
-      .pipe(
-        catchError(this.handleError<Note[]>('editNote', []))
-      )
-  }
-
-  deleteNote(id: number): Observable<any> {
+  deleteNote(id: number): Promise<boolean> {
     return this.http.delete<JSON>(AuthService.host + AuthService.delete + '/' + id)
-      .pipe(
-        catchError(this.handleError<Note[]>('deleteNote', []))
-      )
+      .toPromise().then(res => {
+        return res !== undefined
+      })
   }
 
   /** Log a NotesService message with the MessageService */
@@ -58,7 +60,7 @@ export class NoteService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T): any{
+  /*private handleError<T>(operation = 'operation', result?: T): any{
     return(error: any): Observable<T> => {
       this.auth.setOfflineState(true)
       // TODO: send the error to remote logging infrastructure
@@ -70,5 +72,5 @@ export class NoteService {
       // Let the app keep running by returning an empty result.
       return of(result as T)
     }
-  }
+  }*/
 }
