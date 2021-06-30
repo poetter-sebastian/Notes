@@ -5,7 +5,6 @@ import {NoteService} from './note.service'
 import {Note} from './note'
 import {of} from 'rxjs'
 import {NgForm} from '@angular/forms'
-import {not} from 'rxjs/internal-compatibility';
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +47,7 @@ export class RemoteManagingService {
     // TODO: subscriber.notify
     this.callback(note)
     console.log('remote-managing.service: callback called')
-    if (this.authService.getLoginState()) {
+    if (this.authService.getLoginState(this.getNotes.bind(this))) {
       console.log('remote-managing.service: remote create note')
       this.noteService.createNote(note)
     } else {
@@ -56,19 +55,19 @@ export class RemoteManagingService {
       this.storageService.addNote(note)
     }
     form.resetForm()
-    window.location.reload()
+    //window.location.reload()
   }
 
   public async deleteNote(id: number): Promise<any> {
     console.log('remote-managing.service: delete note')
-    if (this.authService.getLoginState()) {
+    if (this.authService.getLoginState(this.getNotes.bind(this))) {
       console.log('remote-managing.service: delete remote note')
       this.noteService.deleteNote(id)
     } else {
       console.log('remote-managing.service: delete local note')
       this.storageService.deleteNote(id)
     }
-    window.location.reload()
+    //window.location.reload()
   }
 
   public async getNote(id: number): Promise<Note | undefined> {
@@ -83,12 +82,12 @@ export class RemoteManagingService {
   }
 
   public async setNode(note: Note): Promise<any> {
-    if (this.authService.getLoginState()) {
+    if (this.authService.getLoginState(this.getNotes.bind(this))) {
       this.noteService.editNote(note)
     } else {
       this.storageService.setNote(note)
     }
-    window.location.reload()
+    //window.location.reload()
   }
 
   public async setNotes(notes: Note[]): Promise<any> {

@@ -5,13 +5,14 @@ import { Observable, of } from 'rxjs'
 import { MessageService } from './message.service'
 import {LocalStorageService} from './local-storage.service'
 import {RemoteManagingService} from './remote-managing.service'
+import {Note} from './note'
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private messageService: MessageService) {
+  constructor(private messageService: MessageService, private http: HttpClient) {
   }
 
   public static host = 'http://localhost:8765/'
@@ -23,12 +24,52 @@ export class AuthService {
   public static delete = 'api/deleteNote'
 
   private offline = false
+  private loggedIn = false
+  private firstTry = true
 
-  public getLoginState(): boolean {
-      // this.http.post<Error>(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'})
-      //  .toPromise().then(r => console.log('in' + r)).catch(r => console.log('in' + r))
-      this.offline = true
+  public getLoginState(notes?: () => Promise<Array<Note>>): boolean {
+    if ((!this.loggedIn && !this.firstTry) || this.offline)
+    {
+      console.log('not logged in')
+      this.loggedIn = false
       return false
+    }
+    if (this.loggedIn)
+    {
+      console.log('logged in')
+      return true
+    }
+    this.http.post(AuthService.host + AuthService.auth, {username: 'test', auth: 'test'})
+      .pipe(
+        catchError(this.handleError('auth.service: testLogin'))
+      ).toPromise().then(res => {
+        if (res === undefined) {
+          console.log('not logged in')
+          this.offline = true
+          this.loggedIn = false
+          this.firstTry = false
+          return this.loggedIn
+        }
+        else {
+          console.log('first logged in')
+          if (!this.loggedIn && notes !== undefined) {
+            notes().then(r => r)
+          }
+          this.offline = false
+          this.loggedIn = true
+          this.firstTry = false
+
+          return this.loggedIn
+        }
+      }).catch((reason: string) => {
+        // TODO: analyze
+        console.log('auth.service: ' + reason)
+        this.offline = true
+        this.firstTry = false
+        return !this.offline
+      })
+    this.loggedIn = false
+    return false
   }
 
   public getOfflineState(): boolean {
