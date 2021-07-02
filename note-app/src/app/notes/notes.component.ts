@@ -47,7 +47,7 @@ export class NotesComponent implements OnInit {
   getNotes(): void {
     console.log('note.component: load notes')
     // TODO subscribe to managing service
-    this.managingService.callback = this.updateNote.bind(this)
+    this.managingService.callback = this.getNotes.bind(this)
     this.managingService.getNotes((notes: Note[]) => this.notes = notes)
   }
 }

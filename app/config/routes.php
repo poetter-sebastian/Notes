@@ -55,9 +55,9 @@ $routes->scope('/', function (RouteBuilder $builder) {
     $builder->connect('/api/authenticate/', ['controller' => 'Api', 'action' => 'authenticate', '_ext' => 'json']);
     $builder->connect('/api/register/', ['controller' => 'Api', 'action' => 'register', '_ext' => 'json']);
     $builder->connect('/api/getNotes/', ['controller' => 'Api', 'action' => 'getNotes', '_ext' => 'json']);
-    $builder->connect('/api/addNote/', ['controller' => 'Api', 'action' => 'addNote', '_ext' => 'json']);
-    $builder->connect('/api/editNote/', ['controller' => 'Api', 'action' => 'editNote', '_ext' => 'json']);
-    $builder->connect('/api/deleteNote/', ['controller' => 'Api', 'action' => 'deleteNote', '_ext' => 'json']);
+    $builder->connect('/api/addNote/:id', ['controller' => 'Api', 'action' => 'addNote', '_ext' => 'json'])->setPass(['id'])->setPatterns(['id' => '[0-9]+']);
+    $builder->connect('/api/editNote/:id', ['controller' => 'Api', 'action' => 'editNote', '_ext' => 'json'])->setPass(['id'])->setPatterns(['id' => '[0-9]+']);
+    $builder->connect('/api/deleteNote/:id', ['controller' => 'Api', 'action' => 'deleteNote', '_ext' => 'json'])->setPass(['id'])->setPatterns(['id' => '[0-9]+']);
 
     /*
      * Connect catchall routes for all controllers.

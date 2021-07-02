@@ -13,11 +13,11 @@ export class AuthService {
 
   public static host = 'http://localhost:8765/'
   public static auth = 'api/authenticate'
-  public static register = 'api/register.json'
-  public static create = 'api/createNote.json'
-  public static notes = 'api/getNotes.json'
-  public static edit = 'api/editNote.json'
-  public static delete = 'api/deleteNote.json'
+  public static register = 'api/register'
+  public static create = 'api/createNote'
+  public static notes = 'api/getNotes'
+  public static edit = 'api/editNote'
+  public static delete = 'api/deleteNote'
 
   private offline = false
   private loggedIn = false

@@ -62,7 +62,7 @@ class ApiController extends AppController
     {
         parent::beforeFilter($event);
 
-        $this->Security->setConfig('unlockedActions', ['authenticate', 'createNote']);
+        $this->Security->setConfig('unlockedActions', ['authenticate', 'createNote', 'editNote', 'getNotes', 'deleteNote']);
     }
 
     public function index(): void
@@ -99,9 +99,7 @@ class ApiController extends AppController
             $this->set('errorMessage', 'not logged in');
 
         }
-        $this->viewBuilder()
-            ->setOption('serialize', ['error', 'errorMessage'])
-            ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+        $this->viewBuilder()->setOption('serialize', []);
     }
 
     /**
@@ -166,7 +164,6 @@ class ApiController extends AppController
             $note = $this->Notes->newEmptyEntity();
 
             $input = json_decode($this->request->getData('note', ''));
-            Log::critical($this->request->getData('note', ''));
 
             $note->user_id = $user->id;
             $note->id = $input->id;
@@ -246,58 +243,58 @@ class ApiController extends AppController
      *
      * @return void
      */
-    public function editNote(int $id): void
+    public function editNote(int $id = null): void
     {
+        $id = $_GET['id'];
         $this->set('error', false);
 
         /* @var \App\Model\Entity\User $user */
         $user = $this->Login->login($this);
         if(!is_null($user) && is_integer($id) && $id > 0)
         {
+            Log::critical('edit note');
             $note = $this->Notes->get($id);
 
-            $note->title = $this->request->getData('noteTitle', '');
-            $note->encryptNote($this->request->getData('noteText', ''));
+            $input = json_decode($this->request->getData('note', ''));
+
+            $note->title = $input->title;
+            $note->encryptNote($input->message);
             $note->last_edited = FrozenTime::now();
 
             if($this->Notes->save($note))
             {
-                $this->set('error', false);
-                $this->set('data', 'success');
-                $this->viewBuilder()
-                    ->setOption('serialize', ['error', 'data'])
-                    ->setOption('jsonOptions', JSON_FORCE_OBJECT);
+                $this->viewBuilder()->setOption('serialize', []);
                 return;
             }
             $this->set('error', true);
             //TODO remove debug log
+            Log::critical('error while edit note');
             $this->set('errorMessage', $note->getErrors());
         }
         else
         {
             $this->set('error', true);
             $this->set('errorMessage', 'not logged in');
-
-            $this->viewBuilder()
-                ->setOption('serialize', ['error', 'errorMessage'])
-                ->setOption('jsonOptions', JSON_FORCE_OBJECT);
         }
+        $this->viewBuilder()
+            ->setOption('serialize', ['error', 'errorMessage'])
+            ->setOption('jsonOptions', JSON_FORCE_OBJECT);
     }
 
     /**
      *
-     * @param int $id
+     * @param int|null $id
      *
      * @return void
      */
-    public function deleteNote(int $id): void
+    public function deleteNote(int $id = null): void
     {
+        $id = $_GET['id'];
         /* @var \App\Model\Entity\User $user */
         $user = $this->Login->login($this);
-        if(!is_null($user))
+        if(!is_null($user) && $id != null)
         {
             $note = $this->Notes->get($id);
-
             if($this->Notes->delete($note))
             {
                 $this->set('error', false);

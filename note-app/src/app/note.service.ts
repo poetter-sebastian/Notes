@@ -36,14 +36,16 @@ export class NoteService {
   }
 
   editNote(note: Note): Promise<boolean> {
-    return this.http.put<JSON>(AuthService.host + AuthService.edit + '/' + note.id, note)
+    return this.http.post<JSON>(AuthService.host + AuthService.edit + '/?id=' + note.id,
+      {username: 'test', auth: 'test', note: JSON.stringify(note)})
       .toPromise().then(res => {
         return res !== undefined
       })
   }
 
   deleteNote(id: number): Promise<boolean> {
-    return this.http.delete<JSON>(AuthService.host + AuthService.delete + '/' + id)
+    return this.http.put<JSON>(AuthService.host + AuthService.delete + '/?id=' + id,
+      {username: 'test', auth: 'test'})
       .toPromise().then(res => {
         return res !== undefined
       })

@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core'
 import {Note} from './note'
 import {not} from 'rxjs/internal-compatibility'
+import {element} from 'protractor';
 
 @Injectable({
   providedIn: 'root'
@@ -63,17 +64,39 @@ export class LocalStorageService {
   }
 
   setNotes(notes: Note[]): void {
-    this.setItem('notes', JSON.stringify(notes))
-    // TODO: resolve merge conflicts
+    const storedNotes = this.getNotes()
+    if (storedNotes.length <= 0) {
+      this.setItem('notes', JSON.stringify(notes))
+      return
+    }
+    for (const storedNote of storedNotes) {
+      for (const newNote of notes)
+      {
+        if (storedNote.id === newNote.id) {
+          storedNote.title = newNote.title
+          storedNote.message = newNote.message
+          storedNote.last_edited = newNote.last_edited
+        }
+      }
+    }
+    // add new notes to storage
+    for (const newNote of notes)
+    {
+      const found = storedNotes.find(e => e.id === newNote.id)
+      if (found === undefined) {
+        storedNotes.push(newNote)
+      }
+    }
+    this.setItem('notes', JSON.stringify(storedNotes))
   }
 
   deleteNote(id: number): void {
     const notes = this.getNotes()
-    notes.forEach((element, index) => {
-      if (element.id === id) {
+    notes.forEach((e, index) => {
+      if (e.id === id) {
         notes.splice(index, 1)
       }
     })
-    this.setNotes(notes)
+    this.setItem('notes', JSON.stringify(notes))
   }
 }
