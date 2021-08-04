@@ -1,0 +1,268 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is the note api service",
+    "version": "1.0.0",
+    "title": "(My™®©℠ Notes™®©℠)™®©℠",
+    "termsOfService": "https://poetter-sebastian.github.io/",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "poetter-sebastian.github.io",
+  "basePath": "/v2",
+  "tags": [
+    {
+      "name": "note",
+      "description": "Save some information to your note"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/authenticate": {
+      "post": {
+        "tags": [
+          "note"
+        ],
+        "summary": "try to log in",
+        "description": "",
+        "operationId": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Username and password",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "note"
+        ],
+        "summary": "Register new user",
+        "description": "Register a user with a set password and username",
+        "operationId": "RegisterUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "body",
+            "description": "username and password",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/getNotes": {
+      "get": {
+        "tags": [
+          "note"
+        ],
+        "summary": "Find all notes from a user",
+        "description": "Returns all notes from a user",
+        "operationId": "getNotes",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Note"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      }
+    },
+    "/getNote/{noteId}": {
+      "get": {
+        "tags": [
+          "note"
+        ],
+        "summary": "Get a note by ID",
+        "description": "Get a note by a given Id",
+        "operationId": "GetNoteById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "noteId",
+            "in": "path",
+            "description": "ID of note to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/editNote/{noteId}": {
+      "put": {
+        "tags": [
+          "note"
+        ],
+        "summary": "Edit the note by ID",
+        "description": "Edit a single note",
+        "operationId": "editNoteById",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "noteId",
+            "in": "path",
+            "description": "ID of Note to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      }
+    },
+    "/deleteNote/{noteId}": {
+      "delete": {
+        "tags": [
+          "note"
+        ],
+        "summary": "Delete note by ID",
+        "description": "Deletes a single note",
+        "operationId": "deleteNoteById",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "noteId",
+            "in": "path",
+            "description": "ID of pet to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Note": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "created": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "last_edited": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    },
+    "User": {
+      "type": "object",
+      "required": [
+        "username",
+        "password"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "user"
+        },
+        "password": {
+          "type": "string",
+          "example": "12345"
+        },
+        "status": {
+          "type": "string",
+          "description": "authenticate status"
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
+}

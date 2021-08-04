@@ -58,6 +58,11 @@ class ApiController extends AppController
         $this->RequestHandler->prefers('json');
     }
 
+    /**
+     * @param \Cake\Event\EventInterface $event
+     *
+     * @return void|null
+     */
     public function beforeFilter(EventInterface $event)
     {
         parent::beforeFilter($event);
@@ -65,6 +70,9 @@ class ApiController extends AppController
         $this->Security->setConfig('unlockedActions', ['authenticate', 'createNote', 'editNote', 'getNotes', 'deleteNote']);
     }
 
+    /**
+     *
+     */
     public function index(): void
     {
         $notes = $this->Notes->find()
